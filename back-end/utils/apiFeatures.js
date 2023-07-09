@@ -26,17 +26,21 @@ class ApiFeatures {
     // making a copy of queryStr using spread operator because all object pass by reference by default
     const queryCopy = { ...this.queryStr };
 
-    console.log(queryCopy);
     // remnove some field for catogory
     const removefields = ["keyword", "page", "limit"];
     removefields.forEach((key) => delete queryCopy[key]);
     console.log(queryCopy);
 
-    let queryStr = JSON.stringify(queryCopy);
-    // replace all keyword like gt,gte,lt,lte with mongo operators before putting $ symbol of keyword
-    queryStr = queryStr.replace(/\b()\b/g,key =>`$${key}`)
+    // for rating & price filter
 
-    this.query = this.query.find(queryCopy);
+    // queryCopy is a object so converting it into string by JSON.stringigy() method
+    let queryStr = JSON.stringify(queryCopy);
+    // replace all keyword like gt,gte,lt,lte with mongo operators before putting $ symbol of these
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g,key =>`$${key}`)
+
+    // now convert in into object again by JSON.parse() method
+    this.query = this.query.find(JSON.parse(queryStr));
+    console.log(queryStr);
     return this;
   }
 }
